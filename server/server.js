@@ -1,15 +1,30 @@
-import express from "express";
-import cors from "cors";
-import records from "./routes/login.js";
+require("dotenv").config();
+require('express-async-errors');
 
-const PORT = process.env.PORT || 5050;
+const connectDB = require("./db/connect");
+const express = require("express");
+const cors = require('cors')
 const app = express();
+const mainRouter = require("./routes/user");
 
-app.use(cors());
 app.use(express.json());
-app.use("/login", logins);
 
-// start the Express server
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+app.use(cors())
+app.use("/api/v1", mainRouter);
+
+const port = process.env.PORT || 5050;
+
+const start = async () => {
+
+    try {        
+        await connectDB(process.env.MONGO_URI);
+        app.listen(port, () => {
+            console.log(`Server is listening on port ${port}`);
+        })
+
+    } catch (error) {
+       console.log(error); 
+    }
+}
+
+start();
